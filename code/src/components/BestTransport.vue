@@ -5,19 +5,18 @@
         <b>{{ appName }}</b>
       </b-navbar-brand>
     </b-navbar>
-
     <div>
-      <form>
+      <form @submit="checkForm">
         <div>
           <label for="destination">Destino</label>
-          <select name="destination" id="destination">
+          <select v-model="destination" name="destination" id="destination">
             <option value="" selected disabled>Selecione o destino</option>
             <option v-for="destination in destinations" :key="destination" :value="destination">{{ destination }}</option>
           </select>
         </div>
         <div>
           <label for="weight">Peso</label>
-          <input type="text" />
+          <input @keyup="allowOnlyNumbers" v-model="weight" type="text" />Kg
         </div>
         <button>Analisar</button>
       </form>
@@ -31,6 +30,7 @@ import {
   BNavbarBrand,
 } from 'bootstrap-vue'
 import Request from '../helpers/Request.js'
+import FreightValidator from '../validators/FreightValidator.js'
 
 export default {
   components: {
@@ -40,10 +40,14 @@ export default {
   data() {
     const appName = ''
     const destinations = []
+    const destination = ''
+    const weight = ''
 
     return {
       appName,
-      destinations
+      destinations,
+      destination,
+      weight
     }
   },
   async created() {
@@ -55,18 +59,28 @@ export default {
     const freightTypes = await Request.GET(API_URL)
 
     freightTypes.forEach(freight => {
-      if (!(freight.city in this.destinations))
+      if (!this.destinations.includes(freight.city))
         this.destinations.push(freight.city)
 
       this.destinations = [...(new Set(this.destinations))]
     })
-
   },
   methods: {
     // Implemente aqui os metodos utilizados na pagina
-    methodFoo() {
-      console.log(this.appName)
+    allowOnlyNumbers() {
+      this.weight = this.weight.replace(/\D/g, '').replace(/(\d{1,})/g, '$1')
     },
+    checkForm(event) {
+      event.preventDefault()
+
+      const freightValidator = new FreightValidator()
+
+      freightValidator.validate(this.destination, this.weight)
+
+      if (freightValidator.validationError) {
+        alert(freightValidator.validationError)
+      }
+    }
   },
 }
 </script>
