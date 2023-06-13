@@ -42,12 +42,16 @@ export default {
     const destinations = []
     const destination = ''
     const weight = ''
+    const transports = []
+    const destinationTransports = []
 
     return {
       appName,
       destinations,
       destination,
-      weight
+      weight,
+      transports,
+      destinationTransports
     }
   },
   async created() {
@@ -56,11 +60,11 @@ export default {
     this.appName = 'Melhor Frete'
 
     const API_URL = 'http://localhost:3000/transport'
-    const freightTypes = await Request.GET(API_URL)
+    this.transports = await Request.GET(API_URL)
 
-    freightTypes.forEach(freight => {
-      if (!this.destinations.includes(freight.city))
-        this.destinations.push(freight.city)
+    this.transports.forEach(transport => {
+      if (!this.destinations.includes(transport.city))
+        this.destinations.push(transport.city)
 
       this.destinations = [...(new Set(this.destinations))]
     })
@@ -78,8 +82,14 @@ export default {
       freightValidator.validate(this.destination, this.weight)
 
       if (freightValidator.validationError) {
-        alert(freightValidator.validationError)
+        return alert(freightValidator.validationError)
       }
+
+      this.destinationTransports = this.transports.filter(
+        transport => transport.city === this.destination
+      )
+
+      console.log(this.destinationTransports)
     }
   },
 }
