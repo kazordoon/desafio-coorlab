@@ -30,6 +30,7 @@ import {
   BNavbarBrand,
 } from 'bootstrap-vue'
 import Request from '../helpers/Request.js'
+import NumberFormatter from '../helpers/NumberFormatter.js'
 import FreightValidator from '../validators/FreightValidator.js'
 
 export default {
@@ -44,6 +45,7 @@ export default {
     const weight = ''
     const transports = []
     const destinationTransports = []
+    const freightValidator = new FreightValidator()
 
     return {
       appName,
@@ -51,7 +53,8 @@ export default {
       destination,
       weight,
       transports,
-      destinationTransports
+      destinationTransports,
+      freightValidator
     }
   },
   async created() {
@@ -77,17 +80,21 @@ export default {
     checkForm(event) {
       event.preventDefault()
 
-      const freightValidator = new FreightValidator()
+      this.freightValidator.validate(this.destination, this.weight)
 
-      freightValidator.validate(this.destination, this.weight)
-
-      if (freightValidator.validationError) {
-        return alert(freightValidator.validationError)
+      if (this.freightValidator.validationError) {
+        return alert(this.freightValidator.validationError)
       }
 
       this.destinationTransports = this.transports.filter(
         transport => transport.city === this.destination
       )
+
+      this.destinationTransports.forEach(transport => {
+        transport.cost_transport_heavy = NumberFormatter.currencyToNumber(transport.cost_transport_heavy)
+        transport.cost_transport_light = NumberFormatter.currencyToNumber(transport.cost_transport_light)
+        transport.lead_time = NumberFormatter.hoursToNumber(transport.lead_time)
+      })
 
       console.log(this.destinationTransports)
     }
