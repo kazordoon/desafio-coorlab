@@ -46,6 +46,7 @@ export default {
     const transports = []
     const destinationTransports = []
     const freightValidator = new FreightValidator()
+    const idealWeightInKg = 100
 
     return {
       appName,
@@ -54,7 +55,8 @@ export default {
       weight,
       transports,
       destinationTransports,
-      freightValidator
+      freightValidator,
+      idealWeightInKg
     }
   },
   async created() {
@@ -96,7 +98,25 @@ export default {
         transport.lead_time = NumberFormatter.hoursToNumber(transport.lead_time)
       })
 
+      let fasterFreight = this.destinationTransports[0]
+      let cheapestFreight = this.destinationTransports[0]
+
+      this.destinationTransports.forEach(transport => {
+        if (transport.lead_time < fasterFreight.lead_time)
+          fasterFreight = transport
+
+        if (this.weight <= this.idealWeightInKg) {
+          if (transport.cost_transport_light < cheapestFreight.cost_transport_light)
+            cheapestFreight = transport
+        } else {
+          if (transport.cost_transport_heavy < cheapestFreight.cost_transport_heavy)
+            cheapestFreight = transport
+        }
+      })
+
       console.log(this.destinationTransports)
+      console.log("Mais rápido", fasterFreight)
+      console.log("Mais econômico", cheapestFreight)
     }
   },
 }
