@@ -5,8 +5,9 @@
         <b>{{ appName }}</b>
       </b-navbar-brand>
     </b-navbar>
-    <div>
+    <div id="freight-form">
       <form @submit="checkForm">
+        <h4>Insira o destino e o peso</h4>
         <div>
           <label for="destination">Destino</label>
           <select v-model="destination" name="destination" id="destination">
@@ -111,10 +112,10 @@ export default {
     checkForm(event) {
       event.preventDefault()
 
-      this.freightValidator.validate(this.destination, this.weight)
+      const validationError = this.freightValidator.validate(this.destination, this.weight)
 
-      if (this.freightValidator.validationError) {
-        return alert(this.freightValidator.validationError)
+      if (validationError) {
+        return alert(validationError)
       }
 
       this.destinationTransports = this.transports.filter(
