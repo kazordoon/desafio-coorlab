@@ -39,6 +39,8 @@
           <p>Tempo estimado: {{ fasterFreight.lead_time }}h</p>
           <p>Preço: {{ fasterFreight.price }}</p>
         </div>
+
+        <button @click="clearFreights">Limpar</button>
       </div>
     </div>
   </div>
@@ -161,6 +163,11 @@ export default {
       )
 
       this.setFreights()
+    },
+    clearFreights() {
+      this.cheapestFreight = {}
+      this.fasterFreight = {}
+      this.destinationTransports = []
     }
   },
 }
