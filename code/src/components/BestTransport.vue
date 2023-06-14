@@ -108,25 +108,38 @@ export default {
     allowOnlyNumbers() {
       this.weight = this.weight.replace(/\D/g, '').replace(/(\d{1,})/g, '$1')
     },
+    formatTransport(transport) {
+      return {
+        ...transport,
+        lead_time: NumberFormatter.hoursToNumber(transport.lead_time),
+        cost_transport_heavy: NumberFormatter.currencyToNumber(transport.cost_transport_heavy),
+        cost_transport_light: NumberFormatter.currencyToNumber(transport.cost_transport_light)
+      }
+    },
     setFreights() {
-      let fasterFreight = this.destinationTransports[0]
-      let cheapestFreight = this.destinationTransports[0]
+      const [firstTransport] = this.destinationTransports;
+
+      const formattedTransport = this.formatTransport(firstTransport)
+      let fasterFreight = formattedTransport
+      let cheapestFreight = formattedTransport
 
       this.destinationTransports.forEach(transport => {
-        if (transport.lead_time < fasterFreight.lead_time)
-          fasterFreight = transport
+        const currentTransport = this.formatTransport(transport)
+
+        if (currentTransport.lead_time < fasterFreight.lead_time)
+          fasterFreight = currentTransport
 
         if (this.weight <= this.idealWeightInKg) {
-          if (transport.cost_transport_light < cheapestFreight.cost_transport_light)
-            cheapestFreight = transport
+          if (currentTransport.cost_transport_light < cheapestFreight.cost_transport_light)
+            cheapestFreight = currentTransport
 
-            fasterFreight.price = cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_light)
+            fasterFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_light)
             cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_light)
         } else {
-          if (transport.cost_transport_heavy < cheapestFreight.cost_transport_heavy)
-            cheapestFreight = transport
+          if (currentTransport.cost_transport_heavy < cheapestFreight.cost_transport_heavy)
+            cheapestFreight = currentTransport
 
-            fasterFreight.price = cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_heavy)
+            fasterFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_heavy)
             cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_heavy)
         }
       })
@@ -147,22 +160,12 @@ export default {
         transport => transport.city === this.destination
       )
 
-      this.destinationTransports.forEach(transport => {
-        transport.cost_transport_heavy = NumberFormatter.currencyToNumber(transport.cost_transport_heavy)
-        transport.cost_transport_light = NumberFormatter.currencyToNumber(transport.cost_transport_light)
-        transport.lead_time = NumberFormatter.hoursToNumber(transport.lead_time)
-      })
-
       this.setFreights()
-
-      console.log(this.destinationTransports)
-      console.log("Mais rápido", this.fasterFreight)
-      console.log("Mais econômico", this.cheapestFreight)
     }
   },
 }
 </script>
-
+<!-- Como pode notar, sou péssimo em CSS, mas tentei ¯\_(ツ)_/¯ -->
 <style scoped>
 .title {
   width: 90vw;
