@@ -7,6 +7,16 @@ export default class NumberFormatter {
   }
 
   /**
+   * @param {number} number 
+   */
+  static numberToCurrency(number) {
+    return number.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    })
+  }
+
+  /**
    * @param {string} hours 
    */
   static hoursToNumber(hours) {
