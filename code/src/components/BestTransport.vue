@@ -22,6 +22,25 @@
         <button>Analisar</button>
       </form>
     </div>
+
+    <div id="freight-info">
+      <h4 v-if="destinationTransports.length == 0">Nenhum dado selecionado</h4>
+      <div v-else>
+        <h4>Estas são as melhores alternativas de frete que encontramos para você</h4>
+        <div>
+          <p><b>Frete com menor valor</b></p>
+          <p>Transportadora: {{ cheapestFreight.name }}</p>
+          <p>Tempo estimado: {{ cheapestFreight.lead_time }}h</p>
+          <p>Preço: {{ cheapestFreight.price }}</p>
+        </div>
+        <div>
+          <p><b>Frete mais rápido</b></p>
+          <p>Transportadora: {{ fasterFreight.name }}</p>
+          <p>Tempo estimado: {{ fasterFreight.lead_time }}h</p>
+          <p>Preço: {{ fasterFreight.price }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -100,9 +119,15 @@ export default {
         if (this.weight <= this.idealWeightInKg) {
           if (transport.cost_transport_light < cheapestFreight.cost_transport_light)
             cheapestFreight = transport
+
+            fasterFreight.price = cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_light)
+            cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_light)
         } else {
           if (transport.cost_transport_heavy < cheapestFreight.cost_transport_heavy)
             cheapestFreight = transport
+
+            fasterFreight.price = cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_heavy)
+            cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_heavy)
         }
       })
 
@@ -139,11 +164,22 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  width: 90vw;
+  margin: 10vh auto;
+  box-shadow: .5px .5px 6px black;
+}
 .title .navbar {
   background-color: #00aca6 !important;
+  border-radius: 10px;
 }
 
 .title .navbar-brand {
   margin-left: 20px;
+}
+
+#freight-form {
+  padding: 5%;
+  background-color: #c9c9c9;
 }
 </style>
