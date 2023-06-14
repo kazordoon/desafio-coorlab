@@ -35,9 +35,9 @@
         </div>
         <div>
           <p><b>Frete mais rápido</b></p>
-          <p>Transportadora: {{ fasterFreight.name }}</p>
-          <p>Tempo estimado: {{ fasterFreight.lead_time }}h</p>
-          <p>Preço: {{ fasterFreight.price }}</p>
+          <p>Transportadora: {{ fastestFreight.name }}</p>
+          <p>Tempo estimado: {{ fastestFreight.lead_time }}h</p>
+          <p>Preço: {{ fastestFreight.price }}</p>
         </div>
 
         <button @click="clearFreights">Limpar</button>
@@ -74,7 +74,7 @@ export default {
     const transports = []
     const destinationTransports = []
 
-    const fasterFreight = {}
+    const fastestFreight = {}
     const cheapestFreight = {}
 
     return {
@@ -86,7 +86,7 @@ export default {
       destinationTransports,
       freightValidator,
       idealWeightInKg,
-      fasterFreight,
+      fastestFreight,
       cheapestFreight
     }
   },
@@ -122,31 +122,31 @@ export default {
       const [firstTransport] = this.destinationTransports;
 
       const formattedTransport = this.formatTransport(firstTransport)
-      let fasterFreight = formattedTransport
+      let fastestFreight = formattedTransport
       let cheapestFreight = formattedTransport
 
       this.destinationTransports.forEach(transport => {
         const currentTransport = this.formatTransport(transport)
 
-        if (currentTransport.lead_time < fasterFreight.lead_time)
-          fasterFreight = currentTransport
+        if (currentTransport.lead_time < fastestFreight.lead_time)
+          fastestFreight = currentTransport
 
         if (this.weight <= this.idealWeightInKg) {
           if (currentTransport.cost_transport_light < cheapestFreight.cost_transport_light)
             cheapestFreight = currentTransport
 
-            fasterFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_light)
+            fastestFreight.price = NumberFormatter.numberToCurrency(this.weight * fastestFreight.cost_transport_light)
             cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_light)
         } else {
           if (currentTransport.cost_transport_heavy < cheapestFreight.cost_transport_heavy)
             cheapestFreight = currentTransport
 
-            fasterFreight.price = NumberFormatter.numberToCurrency(this.weight * fasterFreight.cost_transport_heavy)
+            fastestFreight.price = NumberFormatter.numberToCurrency(this.weight * fastestFreight.cost_transport_heavy)
             cheapestFreight.price = NumberFormatter.numberToCurrency(this.weight * cheapestFreight.cost_transport_heavy)
         }
       })
 
-      this.fasterFreight = fasterFreight
+      this.fastestFreight = fastestFreight
       this.cheapestFreight = cheapestFreight
     },
     checkForm(event) {
@@ -166,7 +166,7 @@ export default {
     },
     clearFreights() {
       this.cheapestFreight = {}
-      this.fasterFreight = {}
+      this.fastestFreight = {}
       this.destinationTransports = []
     }
   },
